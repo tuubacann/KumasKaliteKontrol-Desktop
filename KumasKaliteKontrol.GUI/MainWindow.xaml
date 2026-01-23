@@ -1,0 +1,419 @@
+﻿<Window x:Class="KumasKaliteKontrol.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kumaş Kalite Kontrol"
+        Height="800"
+        Width="1200"
+        Background="#2F343A">
+
+    <Grid Margin="18">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Background="#3A3F46"
+                CornerRadius="14"
+                Padding="16">
+
+            <ScrollViewer>
+                <StackPanel>
+
+                    <TextBlock Text="Kumaş Bilgileri"
+                               Foreground="White"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Ürün Seç" Foreground="#D1D5DB"/>
+
+                    <ComboBox x:Name="CmbProduct"
+                              Height="34"
+                              Background="#E5E7EB"
+                              Foreground="#111827"
+                              DisplayMemberPath="Display"/>
+
+                    <TextBlock Text="Toplam Metre"
+                               Foreground="#D1D5DB"
+                               Margin="0,10,0,0"/>
+
+                    <TextBox x:Name="TxtMeters"
+                             Height="34"
+                             Background="#4B5563"
+                             Foreground="White"/>
+
+                    <Button Content="Kumaş Kaydet"
+                            Height="40"
+                            Margin="0,10,0,0"
+                            Background="#3B82F6"
+                            Foreground="White"
+                            Click="BtnSaveFabric_Click"/>
+
+                    <Separator Margin="0,16"/>
+
+                    <TextBlock Text="Hata Girişi"
+                               Foreground="White"
+                               FontSize="18"
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="Hata Tipi" Foreground="#D1D5DB" Margin="0,6,0,0"/>
+                    <ComboBox x:Name="CmbDefectKind"
+                              Height="34"
+                              Background="#E5E7EB"
+                              Foreground="#111827"
+                              SelectedIndex="0">
+                        <ComboBoxItem Content="Kısa Hata" Tag="Short"/>
+                        <ComboBoxItem Content="Uzun Hata" Tag="Long"/>
+                    </ComboBox>
+
+                    <TextBlock Foreground="#D1D5DB" Margin="0,10,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Tek Metre"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem.Tag, ElementName=CmbDefectKind}" Value="Long">
+                                        <Setter Property="Text" Value="Başlangıç Metre"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBox x:Name="TxtStart"
+                             Height="34"
+                             Background="#4B5563"
+                             Foreground="White"/>
+
+                    <TextBlock x:Name="LblEnd"
+                               Text="Bitiş Metre"
+                               Foreground="#D1D5DB">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem.Tag, ElementName=CmbDefectKind}" Value="Long">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBox x:Name="TxtEnd"
+                             Height="34"
+                             Background="#4B5563"
+                             Foreground="White">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="IsReadOnly" Value="True"/>
+                                <Setter Property="Text" Value="{Binding Text, ElementName=TxtStart, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem.Tag, ElementName=CmbDefectKind}" Value="Long">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="IsReadOnly" Value="False"/>
+                                        <Setter Property="Text" Value=""/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <TextBlock Text="Hata Türü (4=Uzun, 1=Kısa)"
+                               Foreground="#D1D5DB"
+                               Visibility="Collapsed"/>
+
+                    <ComboBox x:Name="CmbPoint"
+                              Height="34"
+                              Background="#E5E7EB"
+                              Foreground="#111827"
+                              Visibility="Collapsed"
+                              IsEnabled="False">
+                        <ComboBoxItem Content="1"/>
+                        <ComboBoxItem Content="4"/>
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="SelectedIndex" Value="0"/>
+                                
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem.Tag, ElementName=CmbDefectKind}" Value="Long">
+                                        <Setter Property="SelectedIndex" Value="1"/>
+                                       
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+
+                    <Button Content="Hata Ekle"
+                            Height="40"
+                            Margin="0,6,0,0"
+                            Background="#F59E0B"
+                            Foreground="Black"
+                            Click="BtnAddDefect_Click"/>
+
+                    <Button Content="Parti Hesapla"
+                            Height="40"
+                            Margin="0,6,0,0"
+                            Background="#22C55E"
+                            Foreground="Black"
+                            Click="BtnCalculate_Click"/>
+
+                    <Button Content="Geçmiş Kayıtlar"
+                            Height="40"
+                            Margin="0,6,0,0"
+                            Background="#0EA5E9"
+                            Foreground="White"
+                            Click="BtnOpenHistory_Click"/>
+
+                    <Button Content="PDF Oluştur"
+                            Height="40"
+                            Margin="0,6,0,0"
+                            Background="#8B5CF6"
+                            Foreground="White"
+                            Click="BtnCreatePdf_Click"/>
+
+                    <Button Content="Excel Oluştur"
+        Height="40"
+        Margin="0,6,0,0"
+        Background="#16A34A"
+        Foreground="White"
+        Click="BtnCreateExcel_Click"/>
+
+
+                    <Border x:Name="ToastBorder"
+                            Background="#111827"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,16,0,0"
+                            Visibility="Collapsed">
+                        <TextBlock x:Name="TxtToast"
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="16,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="260"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Background="#3A3F46"
+        CornerRadius="14"
+        Padding="14">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- BAŞLIK -->
+                    <TextBlock Grid.Row="0"
+                   Text="Girilen Hatalar"
+                   Foreground="White"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,6"/>
+
+                    <!-- 🔹 YENİ: HATA ÖZETİ -->
+                    <TextBlock Grid.Row="1"
+                   x:Name="TxtDefectSummary"
+                   Foreground="#D1D5DB"
+                   FontSize="13"
+                   Margin="0,0,0,8"
+                   TextWrapping="Wrap"
+                   Text="Toplam hata uzunluğu: - m"/>
+
+                    <!-- TABLO -->
+                    <ScrollViewer Grid.Row="2"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+                        <DataGrid x:Name="DefectGrid"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="Column"
+                      RowHeaderWidth="0"
+                      Background="#2F343A"
+                      Foreground="White"
+                      RowBackground="#374151"
+                      AlternatingRowBackground="#1F2933"
+                      GridLinesVisibility="None"
+                      IsReadOnly="True">
+
+                            <DataGrid.Resources>
+
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#4B5563"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="Padding" Value="10,4"/>
+                                </Style>
+
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="10,2"/>
+                                </Style>
+
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Left"/>
+                                </Style>
+
+                            </DataGrid.Resources>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Id"
+                                        Binding="{Binding Id}"
+                                        Width="*"/>
+
+                                <DataGridTextColumn Header="FabricID"
+                                        Binding="{Binding FabricId}"
+                                        Width="*"/>
+
+                                <DataGridTextColumn Header="Başlangıç"
+                                        Binding="{Binding StartMeter}"
+                                        Width="*"/>
+
+                                <DataGridTextColumn Header="Bitiş"
+                                        Binding="{Binding EndMeter}"
+                                        Width="*"/>
+
+                                <DataGridTextColumn Header="Tür"
+                                        Binding="{Binding PointType}"
+                                        Width="*"/>
+
+                                <DataGridTextColumn Header="Uzunluk"
+                                        Binding="{Binding Length}"
+                                        Width="*"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </ScrollViewer>
+
+                </Grid>
+            </Border>
+
+
+            <Border Grid.Row="1"
+        Background="#3A3F46"
+        CornerRadius="14"
+        Padding="14"
+        Margin="0,14,0,0">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                   Text="Parti Sonuçları"
+                   Foreground="White"
+                   FontSize="18"
+                   FontWeight="Bold"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,8,0,8">
+                        <TextBlock x:Name="TxtQualitySummary"
+                       Foreground="White"
+                       FontWeight="Bold"/>
+
+                        <TextBlock x:Name="TxtLengthSummary"
+                       Foreground="#D1D5DB"
+                       TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="2"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+                        <DataGrid x:Name="PartyGrid"
+          AutoGenerateColumns="False"
+          Background="#2F343A"
+          Foreground="White"
+          BorderBrush="#5B616A"
+          GridLinesVisibility="None"
+          RowBackground="#374151"
+          AlternatingRowBackground="#333841"
+          HeadersVisibility="Column"
+          RowHeaderWidth="0"
+          IsReadOnly="True">
+
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Quality}" Value="2. Kalite">
+                                            <Setter Property="Foreground" Value="OrangeRed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#4B5563"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Padding" Value="10,6"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                </Style>
+
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="10,4"/>
+                                </Style>
+                            </DataGrid.Resources>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Başlangıç"
+                            Binding="{Binding StartMeter}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Bitiş"
+                            Binding="{Binding EndMeter}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Uzunluk"
+                            Binding="{Binding Length}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Hata Uzunluğu"
+                            Binding="{Binding DefectLength}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Hata Oranı"
+                            Binding="{Binding QualityRatio}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Kalite Türü"
+                            Binding="{Binding Quality}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="Kalite Hata Puanı"
+                            Binding="{Binding TotalPoints}"
+                            Width="*"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                    </ScrollViewer>
+
+                </Grid>
+            </Border>
+
+
+        </Grid>
+    </Grid>
+</Window>
